@@ -296,7 +296,7 @@ computePerformanceMetrics= function(all.series, from=1, to=n, phaseLabel = "Trai
 }
 #the following method is customized for paper Ref. No.:  KNOSYS-D-19-00853
 #Title: A temporal-window framework for modeling and forecasting time series
-#Jurnal: Knowledge-Based Systems
+#Journal: Knowledge-Based Systems
 computePerformanceMetrics02= function(all.series, from=1, to=n, phaseLabel = "Training"
                                     , seriesName=seriesNm_i, withNormalization=FALSE) {
   seriesNames = names(all.series)

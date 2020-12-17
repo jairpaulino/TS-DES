@@ -52,7 +52,7 @@ fitnessGA = function(ar, nh1, lr, af, serie_temporal = trainNorm_df){
   nh1 = floor(nh1) #nh2 = floor(nh2);
   af = floor(af)
   
-  learningR = c(0.01, 0.005, 0.,001)
+  learningR = c(0.01, 0.005, 0.001)
   actFunc = c("tanh", "logistic")
   
   matriz = getAnnMatrix(trainNorm_df, ar = ar)
@@ -129,7 +129,7 @@ getMLP = function(trainNorm_df, optGAParameters){
   #train = normalized.data$training_set; head(train)
   #test = normalized.data$test_set; View(test)
   MLPTrain_df =  getAnnMatrix(ar = OptGAParameters[1], time_series = trainNorm_df)
-  MLPTest_df =  getAnnMatrix(ar = OptGAParameters[1], time_series = testNorm_df)
+  #MLPTest_df =  getAnnMatrix(ar = OptGAParameters[1], time_series = testNorm_df)
   
   #View(MLP_df)
   
@@ -148,7 +148,8 @@ getMLP = function(trainNorm_df, optGAParameters){
                        )
   #procTimeTrain = proc.time() - beginTrain
   #beginTest = proc.time()
-  onestepMLP = compute(mlpModel, MLPTest_df, rep = 5)
+  #onestepMLP = compute(mlpModel, MLPTest_df, rep = 5)
+  onestepMLP = as.numeric(mlpModel$net.result[[1]])
   #procTimeTest = proc.time() - beginTest
   
   #result = list()
@@ -157,6 +158,6 @@ getMLP = function(trainNorm_df, optGAParameters){
   #result$proc_time_train = procTimeTrain
   #result$proc_time_test = procTimeTest
   #names(result) = c("ar", "nh1", "lr", "af")
-  return(onestepMLP$net.result)
+  return(onestepMLP)
 }
 

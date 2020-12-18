@@ -59,6 +59,42 @@ end = proc.time() - begin
 
 write.csv(x = optGAParameters_df, file = "Results/optGAParameters_df.csv")
 write.csv(x = modelResult, file = "Results/modelResult.csv")
+#View(optGAParameters_df); View(modelResult)
+
+modelResult = read.csv("Results/modelResult_02.csv", sep = ",")
+modelResult[[1]] = NULL
+
+# plot.ts(trainNorm_df, lwd = 3, ylim=c(0.2, 0.8))
+# for (i in 1:50) {
+#   lines(lines(modelResult[[i]], lwd = 2,
+#               col = "gray", lty = 2))  
+#   Sys.sleep(0.75)
+# }
+
+metrics = as.data.frame(matrix(nrow = 50, ncol = 4))
+
+for(i in 1:50){ #i=1
+  metrics[i,1] = getMSE(target = trainNorm_df, 
+                      forecast = modelResult[[i]])
+  metrics[i,2] = getMAPE(target = trainNorm_df, 
+                        forecast = modelResult[[i]])
+  metrics[i,3] = getARV(target = trainNorm_df, 
+                         forecast = modelResult[[i]])
+  #metrics[i,4] = getTheil(target = trainNorm_df, 
+  #                      forecast = modelResult[[i]])
+} 
+View(metrics)
+
+#km = kmeans(na.omit(modelResult),3)
+#plot(modelResult, col =(km$cluster +1), 
+#     main="K-Means result with 3 clusters", pch=20, cex=1)
+
+
+
+#dormir <- function(seg = 1) {
+#  Sys.sleep(seg)
+#  return(seg)
+#}
 
 #plot.ts(trainNorm_df, lwd = 2)
 #lines(modelResult$V6, col = 2, lwd = 2, lty = 2)

@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-#' 
+#' ok
 getSlidingWindowMatrix = function(ar, series){
   
   #series = 1:30; ar = 3; ss = 12; sar = 2

@@ -4,14 +4,14 @@
 #' @param ar An intenger that specifies the autoregressive length
 #' @param series A time series (array)
 #'
-#' @return Sliding window data.frame 
+#' @return A data.frame - Sliding window.  
 #' @export
 #'
 #' @examples
 #' ok
-getSlidingWindowMatrix = function(ar, series){
+getSlidingWindowMatrix = function(series, ar=5){
   
-  #series = 1:30; ar = 3; ss = 12; sar = 2
+  #series = trainSeries; ar = 3
   matrix.sliding.window.ar = as.data.frame(matrix(nrow = length(series), ncol = (ar+1)))
   c = 0
   for(j in  1:(ar+1)){
@@ -28,7 +28,61 @@ getSlidingWindowMatrix = function(ar, series){
   names(matrix.sliding.window.ar) = names_ar
   
   #View(matriz.sliding.window.ar)
-  return(na.omit(matriz.sliding.window.ar))
+  return(na.omit(matrix.sliding.window.ar))
+}
+
+#' getTfMLP
+#' 
+#' @description
+#' @param
+#' @return
+#' @export
+#'
+#' @examples
+getTfMLP = function(X_trainData, y_trainData, ar=5){
+  #library(keras); library(tensorflow)
+  #install_tensorflow(); install_keras()
+  #trainSeries = trainNorm_df; allSeries = allData_df
+  
+  #use_session_with_seed(123)
+  
+  model = keras_model_sequential()
+  model %>% 
+    layer_dense(units = 20, activation = "relu", 
+                input_shape = ar) %>% 
+    #layer_dense(units = 20, activation = "relu") %>% 
+    #layer_dense(units = 20, activation = "relu") %>% 
+    #layer_dense(units = 20, activation = "relu") %>% 
+    layer_dense(units = 1, activatio = "linear")
+  
+  model %>% compile(loss = "mean_squared_error",
+                    optimizer  = "rmsprop",
+                    metrics = 'mean_absolute_error')
+  set.seed(123)
+  history = model %>% 
+    fit(X_trainData, 
+        y_trainData,
+        batch_size = 1, 
+        verbose = T,
+        epochs = 50,
+        validation_split = 0.25,
+    ) #plot(history)
+  
+  model %>% evaluate(X_trainData, y_trainData)
+  #summary(model)
+  
+  return(model)
+}
+
+getPrediction = function(model, series){
+  #series = X_all_1
+  pred = model %>%
+    #predict_classes(X_all_1)
+    #predict_on_batch(X_all_1)
+    predict_on_batch(series)
+    #predict(X_all_1)
+    #prediction(X_all_1)
+  return(pred)
 }
 
 annMLPModel = function(trainingData, nhl){

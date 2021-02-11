@@ -1,9 +1,8 @@
 # Normalize functions
-normalize = function(array, x, y, max, min){
+getNormalizedTS = function(array, x = 0, y = 1, max, min){
   #Normalize to [0, 1]
-  m = min
-  range = max - m
-  norm1 = (array - m) / range
+  range = max - min
+  norm1 = (array - min) / range
   
   #Then scale to [x,y]
   range2 = y - x

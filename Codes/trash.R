@@ -1,0 +1,62 @@
+library(tsensembler)
+
+## Not run: 
+
+data("water_consumption")
+# embedding time series into a matrix
+dataset <- embed_timeseries(water_consumption, 5)
+plot.ts(dataset)
+
+# splitting data into train/test
+train <- dataset[1:1000, ]
+test <- dataset[1001:1020, ]
+
+# setting up base model parameters
+specs <- model_specs(
+  learner = c("bm_ppr","bm_glm","bm_svr","bm_mars"),
+  learner_pars = list(
+    bm_glm = list(alpha = c(0, .5, 1)),
+    bm_svr = list(kernel = c("rbfdot", "polydot"),
+                  C = c(1,3)),
+    bm_ppr = list(nterms = 4)
+  ))
+
+# building the ensemble
+model <- ADE(target ~., train, specs)
+
+
+# forecast next value and update base and meta models
+# every three points;
+# in the other points, only the weights are updated
+predictions <- numeric(nrow(test))
+for (i in seq_along(predictions)) {
+  predictions[i] <- predict(model, test[i, ])@y_hat
+  if (i %% 3 == 0) {
+    model <-
+      update_base_models(model,
+                         rbind.data.frame(train, test[seq_len(i), ]))
+    
+    model <- update_ade_meta(model, rbind.data.frame(train, test[seq_len(i), ]))
+  }
+  else
+    model <- update_weights(model, test[i, ])
+}
+
+point_forecast <- forecast(model, h = 5)
+
+# setting up an ensemble of support vector machines
+specs2 <-
+  model_specs(learner = c("bm_svr"),
+              learner_pars = list(
+                bm_svr = list(kernel = c("vanilladot", "polydot",
+                                         "rbfdot"),
+                              C = c(1,3,6))
+              ))
+
+model <- DETS(target ~., train, specs2)
+preds <- predict(model, test)@y_hat
+
+plot.ts(test$target, lwd=2)
+lines(preds, col=2, lwd=2)
+
+## End(Not run)

@@ -205,16 +205,6 @@ for (j in (m+1):n){#j=m+1
 
 }
 
-plot.ts(resultsAll_w$target[(m+1):n], ylim=c(0.2,0.5))
-for (i in 2:31){#i=6
-  lines(resultsAll_w[[i]][(m+1):n], col = 'gray', lwd=2)
-}
-lines(resultsAll_w$target[(m+1):n], lwd=3)
-lines(oracleModel[(m+1):n], col=2, lwd=3)
-lines(saModel[(m+1):n], col=3, lwd=3)
-lines(smModel[(m+1):n], col=4, lwd=3)
-lines(DESBED, col = 6, lwd = 3, lty=3)
-
 getMetrics = function(target, forecast){
   #target = resultsAll_w$target[(m+1):n]
   #forecast = smModel[(m+1):n]
@@ -233,7 +223,6 @@ getMetrics = function(target, forecast){
   return(metricsResults)
 }
 
-
 metricsMatrix = data.frame(matrix(ncol=5, nrow = 4))
 colnames(metricsMatrix) = c("MSE", "MAE", "MAPE", "THEIL", "ARV")
 rownames(metricsMatrix) = c("Oracle", "SA", "SM", "DESBED")
@@ -245,6 +234,15 @@ metricsMatrix[4,] = getMetrics(resultsAll_w$target[(m+1):n], DESBED)
 
 write.table(metricsMatrix, file = paste('Results/metricsMatrix_', countryNames, '.csv', sep = ''), sep = ";")
 
+plot.ts(resultsAll_w$target[(m+1):n], ylim=c(0.6, 1.2))
+for (i in 2:31){#i=6
+  lines(resultsAll_w[[i]][(m+1):n], col = 'gray', lwd=2)
+}
+lines(resultsAll_w$target[(m+1):n], lwd=3)
+lines(oracleModel[(m+1):n], col=2, lwd=3)
+lines(saModel[(m+1):n], col=3, lwd=3)
+lines(smModel[(m+1):n], col=4, lwd=3)
+lines(DESBED, col = 6, lwd = 3, lty=3)
 
 # getMSE(oracleModel[(m+1):n], resultsAll_w$target[(m+1):n])
 # getMSE(saModel[(m+1):n], resultsAll_w$target[(m+1):n])

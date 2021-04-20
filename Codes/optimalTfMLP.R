@@ -9,6 +9,33 @@
 #'
 #' @examples
 #' ok
+getSlidingWindowMatrix14SA = function(series, ar=5){
+  
+  #series = trainNorm_df; ar = 5
+  matrix.sliding.window.ar = as.data.frame(matrix(nrow = length(series), ncol = (ar+1)))
+  c = 0
+  for(j in  1:(ar+1)){
+    for(i in 1:length(series)){
+      if(j == 1){
+        matrix.sliding.window.ar[(i+c), j] = series[i+14]
+      }else{
+      matrix.sliding.window.ar[(i+c), j] = series[i]
+      } 
+    } 
+    c = c + 1
+  } 
+  #View(matrix.sliding.window.ar)
+  names_ar = NULL
+  for(i in 1:(ar+1)){
+    names_ar[i] = paste("t_", (i-1), sep = "")
+  }
+  names(matrix.sliding.window.ar) = names_ar
+  
+  #View(matriz.sliding.window.ar)
+  return(na.omit(matrix.sliding.window.ar))
+}
+
+
 getSlidingWindowMatrix = function(series, ar=5){
   
   #series = trainSeries; ar = 3

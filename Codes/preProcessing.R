@@ -10,4 +10,11 @@ getNormalizedTS = function(array, x = 0, y = 1, max, min){
   return(normalized)
 }
 
+# Normalize functions
+getDenormalizedTS = function(array, max, min){
+  #Normalize to [0, 1]
+  range = max - min
+  deNorm = array*range + min
+  return(deNorm)
+}
 

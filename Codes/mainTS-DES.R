@@ -16,9 +16,9 @@ source('Codes/desbedModel.R')
 # Step 1 - preprocessing ----
 # Importing data
 # Brazil_icDia; Brazil_icMm7; Brazil_icAcu
-data_df_all = read.csv("Data/UK_210319.csv", sep = ";")
-countryNames = 'UK_icAcu'
-data_df = data_df_all$inc_acu; data_df = na.omit(data_df)
+data_df_all = read.csv("Data/US_210319.csv", sep = ";")
+countryNames = 'US_icDia'
+data_df = data_df_all$inc_dia; data_df = na.omit(data_df)
 plot.ts(data_df) #View(data_df_all)
 #head(data_df, 10)
 
@@ -63,7 +63,20 @@ resultsAll_w = read.csv(file = paste('Results/test_210319_', countryNames, '.csv
 saModel = getSaAndSmModels(resultsAll_w)$saModel
 smModel = getSaAndSmModels(resultsAll_w)$smModel
 oracleModel = getOracleModel(resultsAll_w)$oracleModel
+procBegin = proc.time()
 DESBED = getDesbedModel(y_trainData, y_allData, resultsAll_w)
+procEnd = proc.time() - procBegin
+
+# Desnormaliza
+saModel = getDenormalizedTS(saModel, min = min(train_df), max = max(train_df))
+smModel = getDenormalizedTS(smModel, min = min(train_df), max = max(train_df))
+oracleModel = getDenormalizedTS(oracleModel, min = min(train_df), max = max(train_df))
+resultsAll_w = getDenormalizedTS(resultsAll_w, min = min(train_df), max = max(train_df))
+DESBED$DESBED_01 = getDenormalizedTS(DESBED$DESBED_01, min = min(train_df), max = max(train_df))
+DESBED$DESBED_02_c = getDenormalizedTS(DESBED$DESBED_02_c, min = min(train_df), max = max(train_df))
+DESBED$DESBED_03_c = getDenormalizedTS(DESBED$DESBED_03_c, min = min(train_df), max = max(train_df))
+DESBED$DESBED_04_c = getDenormalizedTS(DESBED$DESBED_04_c, min = min(train_df), max = max(train_df))
+DESBED$DESBED_05_c = getDenormalizedTS(DESBED$DESBED_05_c, min = min(train_df), max = max(train_df))
 
 # Calculate metrics
 metricsMatrix = data.frame(matrix(ncol=5, nrow = 8))
@@ -92,16 +105,49 @@ resultsAll_w = na.omit(resultsAll_w)
 # DESBED$DESBED_04_c = na.omit(DESBED$DESBED_04_c)
 # DESBED$DESBED_05_c = na.omit(DESBED$DESBED_05_c)
 
-library(RColorBrewer)
-jpeg(file = paste("Results/Figure/",'K_' ,countryNames, '.jpeg', sep = ""), width = 1200, height = 800, res = 150, quality=100 )
-col = c(1, 'gray', brewer.pal(6, "Set1")) # "Set2", 'Dark2'
+# library(RColorBrewer)
+# #jpeg(file = paste("Results/Figure/",'K_' ,countryNames, '.jpeg', sep = ""), width = 1200, height = 800, res = 150, quality=100 )
+# col = c(1, 'gray', brewer.pal(6, "Set1")) # "Set2", 'Dark2'
+# lwd = 2; lty = c(1, 1, 1, 1, 1, 1, 1, 1) #c(NA, NA, NA, 2, 2, 2)
+# pch = c(NA, NA, 15, 16, 17,18, 19, 20)
+# 
+# length(resultsAll_w$target[(m+1):n])
+# 
+# plot.ts(resultsAll_w$target[(m+1):n], #ylim = c(min(resultsAll_w[(m+1):n,]), max(resultsAll_w[(m+1):n,])*1.1),
+#         xlab = 'Index (test set)', ylab = countryNames)
+# for (i in 2:31){#i=6
+#   lines(resultsAll_w[[i]][(m+1):n], col = col[2], lwd=lwd)
+# }
+# lines(resultsAll_w$target[(m+1):n], lwd = lwd)
+# lines(oracleModel[(m+1):n], col=col[3], lwd = lwd)
+# points(oracleModel[(m+1):n], col=col[3], pch=pch[3])
+# lines(DESBED$DESBED_01, col=col[4], lwd = lwd,  lty = lty[4])
+# points(DESBED$DESBED_01, col=col[4], pch=pch[4])
+# lines(DESBED$DESBED_02_c, col = col[5], lwd = lwd,  lty = lty[6])
+# points(DESBED$DESBED_02_c, col = col[5], lwd = lwd, pch = pch[5])
+# lines(DESBED$DESBED_03_c, col = col[6], lwd = lwd,  lty = lty[6])
+# points(DESBED$DESBED_03_c, col = col[6], lwd = lwd, pch = pch[6])
+# lines(DESBED$DESBED_04_c, col = col[7], lwd = lwd,  lty = lty[6])
+# points(DESBED$DESBED_04_c, col = col[7], lwd = lwd, pch = pch[7])
+# lines(DESBED$DESBED_05_c, col = col[8], lwd = lwd,  lty = lty[6])
+# points(DESBED$DESBED_05_c, col = col[8], lwd = lwd, pch = pch[8])
+# 
+# legend = c('TS', 'MLPs', 'Oracle', 'k_1', 'k_2', 'k_3', 'k_4', 'k_5')
+# legend('top', legend =  legend, horiz = T, cex = 0.8, col = col, 
+#        lty=1, lwd=2, pch = pch, inset = 0.02)
+#dev.off()
+
+#jpeg(file = paste("Results/Figure/",'K_' ,countryNames, '.jpeg', sep = ""), width = 1200, height = 800, res = 150, quality=100 )
+#col = c(1, 'gray', brewer.pal(6, "Set1")) # "Set2", 'Dark2'
+col = c(1,  "gray",    "#E41A1C", "#377EB8", "#FF8D00") 
+        
 lwd = 2; lty = c(1, 1, 1, 1, 1, 1, 1, 1) #c(NA, NA, NA, 2, 2, 2)
 pch = c(NA, NA, 15, 16, 17,18, 19, 20)
-
-length(resultsAll_w$target[(m+1):n])
+melhor = DESBED$DESBED_03_c
+pior = DESBED$DESBED_01
 
 plot.ts(resultsAll_w$target[(m+1):n], 
-        ylim = c(min(resultsAll_w[(m+1):n,]), max(resultsAll_w[(m+1):n,])*1.1),
+        ylim = c(75000, 230000),
         xlab = 'Index (test set)', ylab = countryNames)
 for (i in 2:31){#i=6
   lines(resultsAll_w[[i]][(m+1):n], col = col[2], lwd=lwd)
@@ -109,20 +155,18 @@ for (i in 2:31){#i=6
 lines(resultsAll_w$target[(m+1):n], lwd = lwd)
 lines(oracleModel[(m+1):n], col=col[3], lwd = lwd)
 points(oracleModel[(m+1):n], col=col[3], pch=pch[3])
-lines(DESBED$DESBED_01, col=col[4], lwd = lwd,  lty = lty[4])
-points(DESBED$DESBED_01, col=col[4], pch=pch[4])
-lines(DESBED$DESBED_02_c, col = col[5], lwd = lwd,  lty = lty[6])
-points(DESBED$DESBED_02_c, col = col[5], lwd = lwd, pch = pch[5])
-lines(DESBED$DESBED_03_c, col = col[6], lwd = lwd,  lty = lty[6])
-points(DESBED$DESBED_03_c, col = col[6], lwd = lwd, pch = pch[6])
-lines(DESBED$DESBED_04_c, col = col[7], lwd = lwd,  lty = lty[6])
-points(DESBED$DESBED_04_c, col = col[7], lwd = lwd, pch = pch[7])
-lines(DESBED$DESBED_05_c, col = col[8], lwd = lwd,  lty = lty[6])
-points(DESBED$DESBED_05_c, col = col[8], lwd = lwd, pch = pch[8])
-
-legend = c('TS', 'MLPs', 'Oracle', 'k_1', 'k_2', 'k_3', 'k_4', 'k_5')
+lines(pior, col = col[4], lwd = lwd,  lty = lty[4])
+points(pior, col = col[4], lwd = lwd, pch = pch[4])
+lines(melhor, col=col[5], lwd = lwd,  lty = lty[5])
+points(melhor, col=col[5], pch=pch[5])
+legend = c('TS', 'MLPs', 'Oracle', 'Worse (k=1)   ', 'Best (k=5)')
 legend('top', legend =  legend, horiz = T, cex = 0.8, col = col, 
        lty=1, lwd=2, pch = pch, inset = 0.02)
-dev.off()
+#dev.off()
 
-
+error = resultsAll_w$target[(m+1):n] - melhor
+hist(error, main = "", 
+     xlab = "Erro do modelo DESBED",
+     ylab = "Frequência")
+shapiro.test(error)
+Box.test(error, type = "Ljung-Box")

@@ -47,6 +47,10 @@ X_allData = y[,-1] %>% as.matrix()
 y_allData =  y[,1] 
 #length(y_allData)
 
+mlp = generateMLP(X_trainData, y_trainData)
+mlp$Model;
+mlp$Previsao
+
 m = length(y_trainData)
 n = length(y_allData)
 

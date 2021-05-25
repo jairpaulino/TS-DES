@@ -228,3 +228,36 @@ generatePoolOfMLP = function(){
 }
 
 
+generateMLP = function(X_trainData, y_trainData){
+  
+  epochs = 30
+  acfFun = c('relu', 'tanh', 'sigmoid')
+  nNeurons = c(10, 20, 30, 50, 100)
+  
+  model = keras_model_sequential()
+  model %>% 
+    layer_dense(units = nNeurons[2], activation = acfFun[2], 
+                input_shape = 5) %>% 
+    layer_dense(units = 1, activatio = "linear")
+  
+  model %>% compile(loss = "mean_squared_error",
+                    optimizer  = "rmsprop",
+                    metrics = 'mean_absolute_error')
+  set.seed(123)
+  history = model %>% 
+    fit(X_trainData,
+        y_trainData,
+        batch_size = 1, 
+        verbose = T,
+        epochs = epochs,
+        validation_split = 0.25
+    ) 
+  
+  model %>% evaluate(X_trainData, y_trainData)
+  
+  predict = getPrediction(model, X_allData)
+  return(list("Model" = model,
+              "Previsao" = predict))
+}
+
+
